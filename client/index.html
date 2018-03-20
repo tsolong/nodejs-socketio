@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>socket.io</title>
+</head>
+<body>
+
+<h1>socket.io</h1>
+
+<div id="msgList"></div>
+
+<div id="msgControl">
+    <p><textarea id="msgInput" cols="30" rows="10"></textarea></p>
+    <p>
+        <button id="msgBtn" type="button">Send Msg (Ctrl+Enter)</button>
+    </p>
+</div>
+
+<script src="js/jquery-2.2.0.min.js"></script>
+<script src="js/socket.io.slim.js"></script>
+<script>
+    (function ($) {
+        $(function () {
+
+            //建立socket连接
+            let socket = io.connect('http://localhost:5678/');
+
+            //渲染来自服务器的新消息
+            socket.on('renderNewMsgFromServer', function (newMsg) {
+                $('#msgList').append(`<p>${newMsg.msg}</p>`);
+            });
+
+            //监听在文本域中按 Ctrl+Enter 键
+            $('#msgInput').on('keydown', function (e) {
+               e = e || window.event;
+               (e.ctrlKey && e.keyCode == 13) && ($('#msgBtn').trigger('click'));
+            });
+
+            //发送消息按钮事件
+            $('#msgBtn').on('click', function () {
+
+                //消息内容
+                let msgText = $.trim($('#msgInput').val());
+
+                //检验消息内容
+                if (!msgText) {
+                    alert('消息内容不能为空');
+                    return;
+                }
+
+                //推送新的消息到服务器
+                socket.emit('pushNewMsgToServer', {msg: msgText});
+
+                //清空表单
+                $('#msgInput').val('');
+
+            });
+
+        });
+    })(jQuery);
+</script>
+
+</body>
+</html>
