@@ -33,6 +33,8 @@ socketIO.sockets.on('connection', function (socket) {
 
         //通知浏览器渲染新的消息
         socket.emit('renderNewMsgFromServer', {msg: data.msg});
+        //听说下面这句能聊天，先贴代码，改天试一把
+        //socket.broadcast.emit('renderNewMsgFromServer', {msg: data.msg});
 
     });
 
